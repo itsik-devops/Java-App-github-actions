@@ -1,2 +1,21 @@
 # Java-App-github-actions
-Complete Real-Time Project for JAVA Application DevSecOps using GitHub Action: CI/CD Project End-to-End Process of Securely Deploying Java Applications on AWS EKS with ArgoCD Using DevSecOps Pipeline in GitHub Actions.
+Hello everyone! In this article, we will talk about how to create and manage your JAVA project using GitHub actions. This is important for making your software quickly and safely. But, keeping your software secure is also very important. That's where DevSecOps comes in. It's a way to make sure your software is both fast and secure by combining development, security, and operations. In this blog, we will guide you through the whole process of securely putting your Java software on AWS EKS (Elastic Kubernetes Service) using ArgoCD and DevSecOps pipelines in GitHub Actions.
+
+## End-to-End Process of Securely Deploying Java Applications on AWS EKS with ArgoCD Using DevSecOps Pipeline in GitHub Actions.
+
+### Prerequisites
+
+Before setting up the pipeline, ensure you have the following prerequisites in place:
+- Git
+- GitHub Repository
+- Amazon ECR Registry
+- Kubernetes cluster and ArgoCD
+- SonarCloud and Snyk Account
+- Basic knowledge of GitHub Actions, Maven, SonarCloud, Snyk, Kubernetes, and ArgoCD.
+
+
+
+# Architecture
+![image](https://github.com/rahuls512/Java-App-github-actions/assets/123796550/538b654c-57df-410a-80b1-9061c71e3c21)
+
+
