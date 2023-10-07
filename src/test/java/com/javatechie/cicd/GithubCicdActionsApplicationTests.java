@@ -1,10 +1,10 @@
-package com.rahulsharan.java_app;
+package com.javatechie.cicd;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JavaAppApplicationTests {
+class GithubCicdActionsApplicationTests {
 
 	@Test
 	void contextLoads() {
