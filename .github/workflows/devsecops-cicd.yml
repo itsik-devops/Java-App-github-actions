@@ -85,8 +85,7 @@ jobs:
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
           repository: java-app-01  # Replace with your ECR repository name
-          tag: ${{ steps.build-image-publish-to-ecr.outputs.IMAGE_TAG }}
-      
+          tag: 1.0.0               # Replace with the desired image tag      
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
       
       - name: Update kubeconfig for EKS
