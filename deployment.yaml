@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: java-app-01
-          image: 640111764884.dkr.ecr.us-west-1.amazonaws.com/java-app-01:v1
+          image: 640111764884.dkr.ecr.us-west-1.amazonaws.com/java-app-01:1.0.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

@@ -65,7 +65,7 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: java-app-01
-          IMAGE_TAG: v1
+          IMAGE_TAG: 1.0.0
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
@@ -76,7 +76,7 @@ jobs:
           repository: rahuls512/Java-App-github-actions
           ref: 'main'
         env:
-          GIT_HUB_TOKEN: ${{ secrets.GIT_HUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Scan Docker image
         id: docker-scan
