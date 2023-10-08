@@ -23,7 +23,7 @@ jobs:
       - name: Build with Maven and analyze with SonarQube
         run: mvn -B verify sonar:sonar -Dsonar.projectKey=rahuls512_Java-App-github-actions -Dsonar.organization=rahuls512 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   sca-scan:
@@ -40,7 +40,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-  build-image-publish-to-ecr:
+  Build-image-publish-to-ecr:
     needs: sca-scan
     runs-on: ubuntu-latest
     steps:
@@ -50,15 +50,14 @@ jobs:
       - name: Install kubectl
         uses: azure/setup-kubectl@v2.0
         with:
-          version: 'v1.27.0' # Default is the latest stable version
-        id: install
+          version: 'v1.27.0'
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1 # Specify your AWS region here
+          aws-region: us-west-1
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -84,15 +83,26 @@ jobs:
       - name: Scan Docker image with ECR Scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
-          repository: java-app-01  # Replace with your ECR repository name
-          tag: 1.0.0               # Replace with the desired image tag
+          repository: java-app-01
+          tag: 1.0.0
 
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
 
-      # Continue running the pipeline even if there are vulnerabilities.
-        if: steps.docker-scan.outputs.total >= 0  # You can adjust this condition as needed
-        continue-on-error: true
-      
+        # justfor test: Continue running the pipeline even if there are vulnerabilities.
+      - name: Check for medium vulnerabilities
+        run: |
+          medium_vulnerabilities=$(echo "${{ steps.docker-scan.outputs.total }}" | grep -oP 'Medium:\s+\K\d+')
+          if [[ $medium_vulnerabilities -gt 0 ]]; then
+            echo "Medium vulnerabilities found: $medium_vulnerabilities"
+            exit 1
+          else
+            echo "No medium vulnerabilities found. Proceeding with deployment."
+          fi
+
+  Image-Deploy-to-EKS:
+    needs: Build-image-publish-to-ecr 
+    runs-on: ubuntu-latest
+    steps:
       - name: Update kubeconfig for EKS
         run: aws eks update-kubeconfig --name java-app-01
 
@@ -102,7 +112,7 @@ jobs:
           kubectl apply -f service.yaml
 
   zap_scan:
-    needs: build-image-publish-to-ecr
+    needs: Image-Deploy-to-EKS
     runs-on: ubuntu-latest
     name: Scan the web application with ZAP
     steps:
