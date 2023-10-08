@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven cloud
-        run:  mvn -B verify sonar:sonar -Dsonar.projectKey=java-githubaction -Dsonar.organization=java-githubaction -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+        run:  mvn -B verify sonar:sonar -Dsonar.projectKey=rahuls512_Java-App-github-actions -Dsonar.organization=rahuls512 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/maven@main
+        uses: snyk/actions/maven@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
