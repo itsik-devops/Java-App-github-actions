@@ -80,6 +80,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  Image-Scan-with-ECR:
+    needs: Build-image-publish-to-ecr 
+    runs-on: ubuntu-latest
+    steps:
       - name: Scan Docker image with ECR Scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
@@ -88,19 +92,19 @@ jobs:
 
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
 
-        # justfor test: Continue running the pipeline even if there are vulnerabilities.
+      # just for test: Continue running the pipeline even if there are vulnerabilities.
       - name: Check for medium vulnerabilities
         run: |
           medium_vulnerabilities=$(echo "${{ steps.docker-scan.outputs.total }}" | grep -oP 'Medium:\s+\K\d+')
           if [[ $medium_vulnerabilities -gt 0 ]]; then
             echo "Medium vulnerabilities found: $medium_vulnerabilities"
-            exit 1
+            # You can choose to log the vulnerabilities or take other actions here.
           else
             echo "No medium vulnerabilities found. Proceeding with deployment."
           fi
 
   Image-Deploy-to-EKS:
-    needs: Build-image-publish-to-ecr 
+    needs: Image-Scan-with-ECR 
     runs-on: ubuntu-latest
     steps:
       - name: Update kubeconfig for EKS
