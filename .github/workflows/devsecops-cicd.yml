@@ -102,6 +102,11 @@ jobs:
           else
             echo "No medium vulnerabilities found. Proceeding with deployment."
           fi
+      - name: Set AWS Region
+        run: |
+          echo "AWS_DEFAULT_REGION=us-west-1" >> $GITHUB_ENV
+        shell: bash
+            
 
   Image-Deploy-to-EKS:
     needs: Image-Scan-with-ECR 
