@@ -82,12 +82,12 @@ jobs:
         id: docker-scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
-          repository: javaapp
+          repository: java-app-01
           tag: ${{ steps.docker-build.outputs.tag }}
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
 
       - name: Update kube config
-        run: aws eks update-kubeconfig --name javaapp
+        run: aws eks update-kubeconfig --name java-app-01
     
       - name: Deploy to EKS
         run: |
