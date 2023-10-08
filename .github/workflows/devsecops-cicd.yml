@@ -31,10 +31,10 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=java_app_01
         env:
-          GIT_HUB_TOKEN: ${{ secrets.GIT_HUB_TOKEN}}  # Needed to get PR information, if any
-          SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=rahuls512_Java-App-github-actions
         
 
   sca-scan:
