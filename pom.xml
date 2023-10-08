@@ -9,6 +9,8 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <sonar.organization>java-githubaction</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencies>
         <dependency>
@@ -68,5 +70,6 @@
                 </executions>
               </plugin>
        </plugins>
+       <finalName>springboot-images-new</finalName>
        </build>
 </project>
