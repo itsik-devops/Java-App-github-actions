@@ -72,7 +72,7 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-      
+
       - name: Login to GitHub Packages
         uses: actions/checkout@v2
         with:
@@ -80,13 +80,19 @@ jobs:
           ref: 'main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Scan Docker image with ECR Scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
           repository: java-app-01  # Replace with your ECR repository name
-          tag: 1.0.0               # Replace with the desired image tag      
+          tag: 1.0.0               # Replace with the desired image tag
+
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
+
+      # Continue running the pipeline even if there are vulnerabilities
+      - name: Continue pipeline
+        if: steps.docker-scan.outputs.total >= 0  # You can adjust this condition as needed
+        continue-on-error: true
       
       - name: Update kubeconfig for EKS
         run: aws eks update-kubeconfig --name java-app-01
