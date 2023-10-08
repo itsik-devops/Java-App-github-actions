@@ -3,7 +3,7 @@ name: Complete DevSecOps CI/CD pipeline
 on:
   push:
     branches:
-      - main  # Specify the branch you want to trigger the workflow on
+      - main
 
 jobs:
   sast-scan:
@@ -84,6 +84,10 @@ jobs:
     needs: Build-image-publish-to-ecr 
     runs-on: ubuntu-latest
     steps:
+      - name: Set AWS Region
+        run: |
+          echo "AWS_DEFAULT_REGION=us-west-1" >> $GITHUB_ENV
+        shell: bash
       - name: Scan Docker image with ECR Scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
@@ -92,21 +96,18 @@ jobs:
 
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
 
-      # just for test: Continue running the pipeline even if there are vulnerabilities.
       - name: Check for medium vulnerabilities
         run: |
           medium_vulnerabilities=$(echo "${{ steps.docker-scan.outputs.total }}" | grep -oP 'Medium:\s+\K\d+')
           if [[ $medium_vulnerabilities -gt 0 ]]; then
             echo "Medium vulnerabilities found: $medium_vulnerabilities"
-            # You can choose to log the vulnerabilities or take other actions here.
           else
             echo "No medium vulnerabilities found. Proceeding with deployment."
           fi
-      - name: Set AWS Region
-        run: |
-          echo "AWS_DEFAULT_REGION=us-west-1" >> $GITHUB_ENV
-        shell: bash
-            
+        env:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1   
 
   Image-Deploy-to-EKS:
     needs: Image-Scan-with-ECR 
@@ -134,6 +135,6 @@ jobs:
         uses: zaproxy/action-baseline@v0.7.0
         with:
           docker_name: 'owasp/zap2docker-stable'
-          target: 'https://devopsautomation-with-rahulsharan.link'  # Replace with your Registered domain URL
+          target: 'https://devopsautomation-with-rahulsharan.link'
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
