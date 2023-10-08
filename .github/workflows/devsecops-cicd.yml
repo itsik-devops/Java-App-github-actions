@@ -97,15 +97,6 @@ jobs:
           fail_threshold: high
 
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
-
-      - name: Check for medium vulnerabilities
-        run: |
-          medium_vulnerabilities=$(echo "${{ steps.docker-scan.outputs.total }}" | grep -oP 'Medium:\s+\K\d+')
-          if [[ $medium_vulnerabilities -gt 0 ]]; then
-            echo "Medium vulnerabilities found: $medium_vulnerabilities"
-          else
-            echo "No medium vulnerabilities found. Proceeding with deployment."
-          fi
         env:
           aws-region: us-west-1   
 
