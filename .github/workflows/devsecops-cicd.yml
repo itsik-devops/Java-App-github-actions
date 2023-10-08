@@ -18,11 +18,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven cloud
-        run:  mvn -B verify sonar:sonar -Dsonar.projectKey=rahuls512_Java-App-github-actions -Dsonar.organization=rahuls512 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+        run:  mvn -B verify sonar:sonar -Dsonar.projectKey=rahuls512_Java-App-github-actions -Dsonar.organization=rahuls512 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.analysis.mode=preview # Add this line to disable automatic analysis
         env:
           GIT_HUB_TOKEN: ${{ secrets.GIT_HUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        
 
   sca-scan:
     needs: sast-scan
