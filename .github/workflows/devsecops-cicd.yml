@@ -1,4 +1,4 @@
-name: Complete DevSecOps CI-CD pipeline
+name: Complete DevSecOps CI/CD pipeline
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   sast-scan:
     runs-on: ubuntu-latest
-    name: Run Sonar_Qube with Maven
+    name: Run SonarQube with Maven
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven cloud
+      - name: Build with Maven and analyze with SonarQube
         run: mvn -B verify sonar:sonar -Dsonar.projectKey=rahuls512_Java-App-github-actions -Dsonar.organization=rahuls512 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -50,7 +50,7 @@ jobs:
       - name: Install kubectl
         uses: azure/setup-kubectl@v2.0
         with:
-          version: 'v1.27.0' # default is latest stable
+          version: 'v1.27.0' # Default is the latest stable version
         id: install
 
       - name: Configure AWS credentials
@@ -64,7 +64,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push docker image to Amazon ECR
+      - name: Build, tag, and push Docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: java-app-01
@@ -81,16 +81,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Scan Docker image
-        id: docker-scan
+      - name: Scan Docker image with ECR Scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         with:
-          repository: ${{ env.REPOSITORY }}
-          tag: ${{ env.IMAGE_TAG }}
+          repository: java-app-01  # Replace with your ECR repository name
+          tag: ${{ steps.build-image-publish-to-ecr.outputs.IMAGE_TAG }}
 
+      - run: echo "Scanning repository: java-app-01, Tag: ${{ steps.build-image-publish-to-ecr.outputs.IMAGE_TAG }}"
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
 
-      - name: Update kube config
+      - name: Update kubeconfig for EKS
         run: aws eks update-kubeconfig --name java-app-01
 
       - name: Deploy to EKS
@@ -101,7 +101,7 @@ jobs:
   zap_scan:
     needs: build-image-publish-to-ecr
     runs-on: ubuntu-latest
-    name: Scan the web application
+    name: Scan the web application with ZAP
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -112,6 +112,6 @@ jobs:
         uses: zaproxy/action-baseline@v0.7.0
         with:
           docker_name: 'owasp/zap2docker-stable'
-          target: 'https://devopsautomation-with-rahulsharan.link'  # replace with your Registered domain URL
+          target: 'https://devopsautomation-with-rahulsharan.link'  # Replace with your Registered domain URL
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
