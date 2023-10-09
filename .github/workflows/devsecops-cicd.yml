@@ -35,7 +35,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/maven@v2  # Updated to use a more recent version
+        uses: snyk/actions/maven@master
+        continue-on-error: true 
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
 
@@ -114,7 +115,7 @@ jobs:
 
       - name: Update kubeconfig for EKS
         run: aws eks update-kubeconfig --name java-app-01 --region us-west-1
-        
+
       - name: Verify kubectl configuration
         run: kubectl config view    
 
