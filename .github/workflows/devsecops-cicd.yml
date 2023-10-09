@@ -108,18 +108,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-1
 
-      - name: Update kubeconfig for EKS
-        run: aws eks update-kubeconfig --name java-app-01 --region us-west-1
+      - name: Create kubeconfig
+        run: |
+            mkdir ${HOME}/.kube
+            echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+            cat ${HOME}/.kube/config
 
-      - name: Verify kubectl configuration
-        run: kubectl config view    
+      - name: Use context
+        run: kubectl config use-context octobay-api       
   
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f deployment.yaml
           kubectl apply -f service.yaml
-        env:
-          KUBECONFIG: ${{secrets.KUBE_CONFIG}}
       
   zap_scan:
     needs: Image-Deploy-to-EKS
