@@ -119,12 +119,18 @@ jobs:
       - name: Verify kubectl configuration
         run: kubectl config view    
 
-      - name: Deploy to EKS
+      - name: Set up kubectl
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{secrets.KUBE_CONFIG}}
+          version: "1.19.9"
+  
+      - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f deployment.yaml
           kubectl apply -f service.yaml
         env:
-          KUBECONFIG: "C:\\Users\\RAHUL\\.kube\\config"
+          KUBECONFIG: ${{secrets.KUBE_CONFIG}}
       
   zap_scan:
     needs: Image-Deploy-to-EKS
