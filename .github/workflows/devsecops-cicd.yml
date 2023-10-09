@@ -121,11 +121,11 @@ jobs:
 
       - name: Deploy to EKS
         run: |
-          kubectl apply -f deployment.yaml --kubeconfig="C:\\Users\\RAHUL\\.kube\\config"
-          kubectl apply -f service.yaml --kubeconfig="C:\\Users\\RAHUL\\.kube\\config"
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
         env:
           KUBECONFIG: "C:\\Users\\RAHUL\\.kube\\config"
-
+      
   zap_scan:
     needs: Image-Deploy-to-EKS
     runs-on: ubuntu-latest
