@@ -84,12 +84,9 @@ jobs:
     needs: Build-image-publish-to-ecr 
     runs-on: ubuntu-latest
     steps:
-      - name: Set AWS Region
-        run: |
-          echo "AWS_DEFAULT_REGION=us-west-1" >> $GITHUB_ENV
-        shell: bash
       - name: Scan Docker image with ECR Scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
+        continue-on-error: true
         with:
           repository: java-app-01
           tag: 1.0.0
@@ -97,7 +94,7 @@ jobs:
   
 
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
-        continue-on-error: true
+        
         env:
           aws-region: us-west-1   
 
