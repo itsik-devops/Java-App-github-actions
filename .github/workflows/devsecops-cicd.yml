@@ -48,11 +48,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v2.0
-        with:
-          version: 'v1.27.0'
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -118,12 +113,6 @@ jobs:
 
       - name: Verify kubectl configuration
         run: kubectl config view    
-
-      - name: Set up kubectl
-        uses: azure/k8s-set-context@v1
-        with:
-          kubeconfig: ${{secrets.KUBE_CONFIG}}
-          version: "1.19.9"
   
       - name: Apply Kubernetes manifests
         run: |
