@@ -43,6 +43,7 @@ jobs:
   Build-image-publish-to-ecr:
     needs: sca-scan
     runs-on: ubuntu-latest
+    name: Build Image Publish to ECR
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -83,24 +84,20 @@ jobs:
   Image-Scan-with-ECR:
     needs: Build-image-publish-to-ecr 
     runs-on: ubuntu-latest
+    name: Image Scan with ECR
     steps:
-
       - name: Scan Docker image with ECR Scan
         uses: alexjurkiewicz/ecr-scan-image@v1.7.1
         continue-on-error: true
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1
-          repository: java-app-01
-          tag: 1.0.0
-          fail_threshold: high
-  
+          repository: java-app-01  # Replace with your ECR repository name
+          tag: 1.0.0               # Replace with the desired image tag      
       - run: echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
 
   Image-Deploy-to-EKS:
     needs: Image-Scan-with-ECR 
     runs-on: ubuntu-latest
+    name: Image Deploy to EKS
     steps:
       - name: Update kubeconfig for EKS
         run: aws eks update-kubeconfig --name java-app-01
